@@ -2,56 +2,57 @@
 import pygame
 from main import screen
 import random
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
 
-booths = [(100, 100), (600, 150), (300, 400)]
+# Maze settings
+CELL_SIZE = 80  # Increased cell size for larger spacing
+MAZE_WIDTH = SCREEN_WIDTH // CELL_SIZE + 2  # Extra cells for off-screen visibility
+MAZE_HEIGHT = SCREEN_HEIGHT // CELL_SIZE + 2  # Extra cells for off-screen visibility
+
+# Example booth positions (scaled for new cell size)
+booths = [(2, 2), (10, 3), (5, 7)]  # Adjusted booth positions
 
 # Function to draw booths
 def draw_booths():
     for booth in booths:
-        pygame.draw.rect(screen, (0, 0, 255), (*booth, 40, 40))  # Blue booth squares
+        x, y = booth
+        pygame.draw.rect(screen, BLUE, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
-# In the main loop, add this to draw the booths
-draw_booths()
-
-
+# Function to generate the maze
 def generate_maze(width, height):
-    # Initialize the maze with walls
     maze = [['#' for _ in range(width)] for _ in range(height)]
-    
-    # Create a stack for the cells
     stack = []
-    
-    # Define directions for moving in the maze (down, up, right, left)
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-    # Randomly select a starting point
     start_x = random.randrange(1, width, 2)
     start_y = random.randrange(1, height, 2)
-    maze[start_y][start_x] = ' '  # Mark the start cell as a path
+    maze[start_y][start_x] = ' '  
     stack.append((start_x, start_y))
 
     while stack:
         x, y = stack[-1]
-        
-        # Find the neighboring cells
         neighbors = []
         for dx, dy in directions:
             nx, ny = x + dx * 2, y + dy * 2
             if 0 < nx < width and 0 < ny < height and maze[ny][nx] == '#':
                 neighbors.append((nx, ny))
-        
+
         if neighbors:
-            # Choose a random neighbor
             nx, ny = random.choice(neighbors)
-            # Remove the wall between the current cell and the chosen cell
             maze[(y + ny) // 2][(x + nx) // 2] = ' '
-            maze[ny][nx] = ' '  # Mark the chosen cell as a path
-            stack.append((nx, ny))  # Add it to the stack
+            maze[ny][nx] = ' '
+            stack.append((nx, ny))
         else:
-            stack.pop()  # Backtrack
+            stack.pop()
 
     return maze
 
-def print_maze(maze):
-    for row in maze:
-        print(''.join(row))
+# Function to draw the maze
+def draw_maze(maze):
+    for y, row in enumerate(maze):
+        for x, cell in enumerate(row):
+            color = WHITE if cell == ' ' else BLACK
+            pygame.draw.rect(screen, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
