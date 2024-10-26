@@ -1,3 +1,12 @@
+from main import SCREEN_WIDTH
+from main import SCREEN_HEIGHT
+from main import screen
+from main import BLACK
+from main import WHITE
+import pygame
+
+
+
 def title_screen():
     screen.fill(BLACK)
     font = pygame.font.Font(None, 74)
