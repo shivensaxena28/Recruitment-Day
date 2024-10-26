@@ -1,4 +1,9 @@
+
+
 # Example booth positions (can be random or part of maze generation logic)
+import pygame
+from main import screen
+
 booths = [(100, 100), (600, 150), (300, 400)]
 
 # Function to draw booths

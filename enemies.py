@@ -1,3 +1,17 @@
+import pygame
+import random
+import math
+import main
+from main import screen
+from main import BLACK
+from main import WHITE
+from main import FLASHLIGHT_LENGTH
+from main import player_x
+from main import player_y
+from main import flashlight_angle
+
+
+
 class Enemy:
     def __init__(self, x, y, name, color, speed=2):
         self.x = x

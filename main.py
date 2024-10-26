@@ -1,77 +1,72 @@
 import pygame
-import random
-import math
 
-# Initialize pygame
-pygame.init()
 
-# Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-WHITE, BLACK = (255, 255, 255), (0, 0, 0)
-PLAYER_SPEED = 4
-FLASHLIGHT_CONE_ANGLE = math.radians(60)  # 60-degree flashlight cone
-FLASHLIGHT_LENGTH = 150  # Length of flashlight beam
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
 
-# Create the screen
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Career Maze: Dream for the Internship")
+from maze import generate_maze, print_maze
+from enemies import Enemy
+from booths import draw_booths
+from ui import title_screen, end_game_screen
+from camera import Camera
 
-# Load assets (placeholders for now)
-player_img = pygame.Surface((40, 40))
-player_img.fill((0, 255, 0))  # Green player square
 
-# Game variables
-player_x, player_y = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
-clock = pygame.time.Clock()
 
-# Function to draw the player
-def draw_player(x, y):
-    screen.blit(player_img, (x, y))
+# Assume Character is your player class with a rect attribute for positioning
+class Character:
+    def __init__(self, x, y):
+        self.image = pygame.image.load("assets/player.png")
+        self.rect = self.image.get_rect(center=(x, y))
 
-# Function to handle player movement
-def handle_player_movement(keys_pressed, x, y):
-    if keys_pressed[pygame.K_LEFT]:
-        x -= PLAYER_SPEED
-    if keys_pressed[pygame.K_RIGHT]:
-        x += PLAYER_SPEED
-    if keys_pressed[pygame.K_UP]:
-        y -= PLAYER_SPEED
-    if keys_pressed[pygame.K_DOWN]:
-        y += PLAYER_SPEED
-    return x, y
+    def update(self, keys):
+        if keys[pygame.K_LEFT]:
+            self.rect.x -= 5
+        if keys[pygame.K_RIGHT]:
+            self.rect.x += 5
+        if keys[pygame.K_UP]:
+            self.rect.y -= 5
+        if keys[pygame.K_DOWN]:
+            self.rect.y += 5
 
-# Function to draw flashlight cone
-def draw_flashlight(x, y, angle):
-    end_x = x + FLASHLIGHT_LENGTH * math.cos(angle)
-    end_y = y + FLASHLIGHT_LENGTH * math.sin(angle)
-    pygame.draw.line(screen, WHITE, (x, y), (end_x, end_y), 2)
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
-# Main loop
-running = True
-while running:
-    clock.tick(60)  # Limit FPS to 60
-    screen.fill(BLACK)
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("Career Maze: Dream for the Internship")
 
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    camera = Camera(1600, 1600)  # Assuming the maze size is 1600x1600
+    player = Character(400, 400)  # Start position of the player
 
-    # Get keys pressed
-    keys_pressed = pygame.key.get_pressed()
+    title_screen(screen)  # Show title screen
 
-    # Player movement
-    player_x, player_y = handle_player_movement(keys_pressed, player_x, player_y)
+    # Game loop
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    # Draw player
-    draw_player(player_x, player_y)
+        keys = pygame.key.get_pressed()
+        player.update(keys)
 
-    # Draw flashlight (basic direction right for now)
-    flashlight_angle = 0  # Adjust this angle based on player direction (for now, it’s fixed)
-    draw_flashlight(player_x + 20, player_y + 20, flashlight_angle)
+        camera.update(player)  # Update the camera position based on player
 
-    # Update display
-    pygame.display.flip()
+        # Drawing the game elements
+        screen.fill((0, 0, 0))  # Clear screen
+        
+        # Draw maze, enemies, and booths based on camera
+        # Example: draw_maze(screen, camera)  # Implement this function in your maze logic
+        generate_maze(player.x, player.y)
 
-# Quit pygame
-pygame.quit()
+        # Draw player at the camera-adjusted position
+        screen.blit(player.image, camera.apply(player))
+
+        pygame.display.flip()
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
