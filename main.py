@@ -14,7 +14,7 @@ FLASHLIGHT_LENGTH = 150  # Length of flashlight beam
 
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Career Maze: Dream for the Internship")
+pygame.display.set_caption("Recruitment Day")
 
 # Load assets (placeholders for now)
 player_img = pygame.Surface((40, 40))
