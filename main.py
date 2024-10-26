@@ -6,19 +6,18 @@ import math
 pygame.init()
 
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
-WHITE, BLACK = (255, 255, 255), (0, 0, 0)
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+WHITE, BLACK, RED = (255, 255, 255), (0, 0, 0), (211, 211, 211)
 PLAYER_SPEED = 4
+FLASHLIGHT_CONE_ANGLE = math.radians(60)  # 60-degree flashlight cone
 FLASHLIGHT_LENGTH = 150  # Length of flashlight beam
-TILE_SIZE = 80  # Size of each cell in pixels
-COLLECTIBLE_COLOR = (255, 215, 0)  # Gold color for collectibles
 
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Career Maze: Dream for the Internship")
 
 # Load assets (player image)
-player_img = pygame.Surface((40, 40))
+player_img = pygame.Surface((10, 10))
 player_img.fill((0, 255, 0))  # Green player square
 
 # Maze generation function
@@ -49,49 +48,31 @@ def generate_maze(width, height):
 
     return maze
 
-def draw_maze(screen, maze, camera):
+def draw_maze(screen, maze):
+    tile_size = 20  # Size of each cell in pixels
     for y, row in enumerate(maze):
         for x, cell in enumerate(row):
             color = WHITE if cell == '#' else BLACK
-            pygame.draw.rect(screen, color, (x * TILE_SIZE + camera.camera.x, y * TILE_SIZE + camera.camera.y, TILE_SIZE, TILE_SIZE))
-
-def generate_collectibles(maze):
-    collectibles = []
-    for y in range(len(maze)):
-        for x in range(len(maze[y])):
-            if maze[y][x] == ' ' and random.random() < 0.1:  # 10% chance to place a collectible
-                collectibles.append((x, y))
-    return collectibles
-
-def draw_collectibles(screen, collectibles, camera):
-    for (x, y) in collectibles:
-        pygame.draw.rect(screen, COLLECTIBLE_COLOR, (x * TILE_SIZE + camera.camera.x, y * TILE_SIZE + camera.camera.y, TILE_SIZE // 2, TILE_SIZE // 2))
+            pygame.draw.rect(screen, color, (x * tile_size, y * tile_size, tile_size, tile_size))
 
 # Character class
 class Character:
     def __init__(self, x, y):
         self.image = player_img
         self.rect = self.image.get_rect(center=(x, y))
-        self.maze_pos = (x // TILE_SIZE, y // TILE_SIZE)  # Track maze position
 
-    def update(self, keys, maze):
-        new_x, new_y = self.rect.x, self.rect.y
-        
+    def update(self, keys):
         if keys[pygame.K_LEFT]:
-            new_x -= PLAYER_SPEED
+            self.rect.x -= PLAYER_SPEED
         if keys[pygame.K_RIGHT]:
-            new_x += PLAYER_SPEED
+            self.rect.x += PLAYER_SPEED
         if keys[pygame.K_UP]:
-            new_y -= PLAYER_SPEED
+            self.rect.y -= PLAYER_SPEED
         if keys[pygame.K_DOWN]:
-            new_y += PLAYER_SPEED
+            self.rect.y += PLAYER_SPEED
 
-        # Check for collisions with walls
-        if maze[new_y // TILE_SIZE][new_x // TILE_SIZE] == ' ':
-            self.rect.x, self.rect.y = new_x, new_y  # Move only if there's no wall
-
-    def draw(self, screen, camera):
-        screen.blit(self.image, self.rect.move(-camera.camera.x, -camera.camera.y))
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
 
 # Camera class
 class Camera:
@@ -118,14 +99,26 @@ def draw_flashlight(x, y, angle):
     end_y = y + FLASHLIGHT_LENGTH * math.sin(angle)
     pygame.draw.line(screen, WHITE, (x, y), (end_x, end_y), 2)
 
+def draw_fog(x, y):
+    # Calculate the size of the fog rectangles
+    fog_width = SCREEN_WIDTH
+    fog_height = SCREEN_HEIGHT
+
+    # Draw rectangles to cover the entire screen
+    pygame.draw.rect(screen, RED, (0, 0, fog_width, y - 10))  # Top
+    pygame.draw.rect(screen, RED, (0, y + 10, fog_width, fog_height - (y + 10)))  # Bottom
+    pygame.draw.rect(screen, RED, (0, 0, x - 10, fog_height))  # Left
+    pygame.draw.rect(screen, RED, (x + 10, 0, fog_width - (x + 10), fog_height))  # Right
+
+
+
 def main():
     # Maze dimensions
-    maze_width, maze_height = 81, 81  # Larger maze
+    maze_width, maze_height = 41, 41  # Must be odd numbers
     maze = generate_maze(maze_width, maze_height)
-    collectibles = generate_collectibles(maze)
 
-    camera = Camera(maze_width * TILE_SIZE, maze_height * TILE_SIZE)  # Adjust for tile size
-    player = Character(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)  # Start position of the player
+    camera = Camera(maze_width * 20, maze_height * 20)  # Adjust for tile size
+    player = Character(1 * 20, 1 * 20)  # Start position of the player
 
     clock = pygame.time.Clock()
     running = True
@@ -133,6 +126,7 @@ def main():
     while running:
         clock.tick(60)  # Limit FPS to 60
         screen.fill(BLACK)
+
 
         # Handle events
         for event in pygame.event.get():
@@ -143,21 +137,20 @@ def main():
         keys = pygame.key.get_pressed()
 
         # Player movement
-        player.update(keys, maze)
-        camera.update(player)  # Update camera based on player position
+        player.update(keys)
+        camera.update(player)  # Update camera based on player
 
         # Draw the maze
-        draw_maze(screen, maze, camera)
+        draw_maze(screen, maze)
 
-        # Draw collectibles
-        draw_collectibles(screen, collectibles, camera)
+        draw_fog(player.rect.centerx, player.rect.centery)
 
-        # Draw player
-        player.draw(screen, camera)
+        # Draw player at the camera-adjusted position
+        screen.blit(player.image, camera.apply(player))
 
         # Draw flashlight (basic direction right for now)
         flashlight_angle = 0  # Adjust this angle based on player direction (for now, it’s fixed)
-        draw_flashlight(player.rect.centerx + camera.camera.x, player.rect.centery + camera.camera.y, flashlight_angle)
+        #draw_flashlight(player.rect.centerx, player.rect.centery, flashlight_angle)
 
         # Update display
         pygame.display.flip()
