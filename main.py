@@ -57,11 +57,20 @@ def draw_maze(screen, maze):
 
 # Character class
 class Character:
-    def __init__(self, x, y):
+    print("Hello")
+    print("Hello")
+    def __init__(self, x, y, maze):
+        print("Hello")
         self.image = player_img
+        print("Hello")
         self.rect = self.image.get_rect(center=(x, y))
+        self.maze = maze  # Store the maze for collision detection
+        print("Hello")
 
     def update(self, keys):
+        print("Hello")
+        original_x, original_y = self.rect.x, self.rect.y
+        
         if keys[pygame.K_LEFT]:
             self.rect.x -= PLAYER_SPEED
         if keys[pygame.K_RIGHT]:
@@ -70,9 +79,20 @@ class Character:
             self.rect.y -= PLAYER_SPEED
         if keys[pygame.K_DOWN]:
             self.rect.y += PLAYER_SPEED
+        
+        print("Hello")
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        # Check for collisions and revert position if necessary
+        if not self.is_valid_position():
+            self.rect.x, self.rect.y = original_x, original_y  # Revert to original position
+
+    def is_valid_position(self):
+        print("Hello")
+        # Check if the player's position is on a wall
+        cell_x = self.rect.x // 20  # Assuming each cell is 20x20 pixels
+        cell_y = self.rect.y // 20
+        return self.maze[cell_y][cell_x] == ' '  # Check if the cell is a path
+
 
 # Camera class
 class Camera:
@@ -111,14 +131,15 @@ def draw_fog(x, y):
     pygame.draw.rect(screen, RED, (x + 10, 0, fog_width - (x + 10), fog_height))  # Right
 
 
-
 def main():
     # Maze dimensions
+    print("Hello")
     maze_width, maze_height = 41, 41  # Must be odd numbers
     maze = generate_maze(maze_width, maze_height)
 
+    print("Hello")
     camera = Camera(maze_width * 20, maze_height * 20)  # Adjust for tile size
-    player = Character(1 * 20, 1 * 20)  # Start position of the player
+    player = Character(1 * 20, 1 * 20, maze)  # Pass the maze to the player
 
     clock = pygame.time.Clock()
     running = True
@@ -126,7 +147,6 @@ def main():
     while running:
         clock.tick(60)  # Limit FPS to 60
         screen.fill(BLACK)
-
 
         # Handle events
         for event in pygame.event.get():
@@ -148,14 +168,7 @@ def main():
         # Draw player at the camera-adjusted position
         screen.blit(player.image, camera.apply(player))
 
-        # Draw flashlight (basic direction right for now)
-        flashlight_angle = 0  # Adjust this angle based on player direction (for now, it’s fixed)
-        #draw_flashlight(player.rect.centerx, player.rect.centery, flashlight_angle)
-
         # Update display
         pygame.display.flip()
 
     pygame.quit()
-
-if __name__ == "__main__":
-    main()

@@ -1,6 +1,6 @@
 # Example booth positions (can be random or part of maze generation logic)
 import pygame
-from main import screen
+from main import SCREEN_HEIGHT, SCREEN_WIDTH, screen
 import random
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
