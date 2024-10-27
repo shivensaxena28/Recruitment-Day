@@ -11,13 +11,13 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 WHITE, BLACK, RED, GREEN, GRAY, YELLOW = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (211, 211, 211), (255,255,0)
 PLAYER_SPEED = 1.75
 
-FLAG_ONE_POSITION = (95, 500)
+FLAG_ONE_POSITION = (95, 520)
 FLAG_ONE_RADIUS = 15
 
-FLAG_TWO_POSITION = (640, 132)
+FLAG_TWO_POSITION = (635, 132)
 FLAG_TWO_RADIUS = 15
 
-FLAG_THREE_POSITION = (695, 395)
+FLAG_THREE_POSITION = (440, 310)
 FLAG_THREE_RADIUS = 15
 
 GOAL_POSITION = (770, 570)
@@ -94,7 +94,7 @@ walls2 = [
     pygame.Rect(460, 360, 100, 10),
     pygame.Rect(740, 420, 10, 100),
     pygame.Rect(740, 520, 50, 10),
-    pygame.Rect(520, 330, 40, 30),
+    pygame.Rect(420, 330, 140, 30),
     pygame.Rect(720,260, 10, 100),  #right most down middle
     pygame.Rect(730,260, 60, 10),
     pygame.Rect(350, 100, 10, 60), #Top right block bottom
@@ -197,36 +197,6 @@ class Character:
                     new_rect.top = wall.bottom
                     
         self.rect = new_rect
-            
-
-    def check_collision(self, dx, dy):
-        # Check for collision with walls
-        new_rect = self.rect.move(dx, dy)
-        for wall in walls:
-            if new_rect.colliderect(wall):
-                # If colliding, reset position to avoid moving into the wall
-                if dx > 0:  # Moving right
-                    new_rect.right = wall.left
-                if dx < 0:  # Moving left
-                    new_rect.left = wall.right
-                if dy > 0:  # Moving down
-                    new_rect.bottom = wall.top
-                if dy < 0:  # Moving up
-                    new_rect.top = wall.bottom
-                    
-        for wall in walls2:
-            if new_rect.colliderect(wall):
-                # If colliding, reset position to avoid moving into the wall
-                if dx > 0:  # Moving right
-                    new_rect.right = wall.left
-                if dx < 0:  # Moving left
-                    new_rect.left = wall.right
-                if dy > 0:  # Moving down
-                    new_rect.bottom = wall.top
-                if dy < 0:  # Moving up
-                    new_rect.top = wall.bottom
-                    
-        self.rect = new_rect
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -288,8 +258,9 @@ def draw_fog(x, y):
 def title_screen():
     while True:
         screen.fill(BLACK)
-        display_message(screen, "FLASH-LIGHT MAZE", WHITE, 0,0)
-        display_message2(screen, "Press Enter to Start", WHITE, 0,200)
+        display_message(screen, "FLASH-LIGHT MAZE", YELLOW, 0,0)
+        display_message2(screen, "Get as many flags and reach the end before time runs out", WHITE, 0,100)
+        display_message2(screen, "Press Enter to Start", RED, -10,150)
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -299,22 +270,23 @@ def title_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
                     return  # Exit the title screen'''
-def End_screen():
+def end_screen():
     while True:
-        screen.fill(BLACK)
-        display_message(screen, "FLASH-LIGHT MAZE", WHITE, 0,0)
-        display_message2(screen, "Press Enter to Start", WHITE, 0,200)
-        pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
+                    main()
                     return  # Exit the title screen'''
 def main():
     title_screen()
+    #MUSIC
+    mixer.init()
+    mixer.music.load('Music.mp3')
+    mixer.music.set_volume(0.5)
+    mixer.music.play()
     player = Character(30, 30)  # Starting position
     flag1 = Flag(FLAG_ONE_POSITION[0], FLAG_ONE_POSITION[1])
     flag2 = Flag(FLAG_TWO_POSITION[0], FLAG_TWO_POSITION[1])
@@ -334,9 +306,6 @@ def main():
         elapsed_time = pygame.time.get_ticks() - start_ticks
         remaining_time = start_time - elapsed_time
         screen.fill(YELLOW)
-        elapsed_time = pygame.time.get_ticks() - start_ticks
-        remaining_time = start_time - elapsed_time
-        screen.fill(YELLOW)
 
         # Handle events
         for event in pygame.event.get():
@@ -347,7 +316,6 @@ def main():
         # Get keys pressed
         keys = pygame.key.get_pressed()
 
-        draw_fog(player.rect.centerx , player.rect.centery)
         # Update player
         player.update(keys)
         if check_flag_reached(player, FLAG_ONE_POSITION[0], FLAG_ONE_POSITION[1]) and not taken1:
@@ -366,6 +334,7 @@ def main():
         elif not taken3:
             flag3.update(taken3)
 
+        #draw_fog(player.rect.centerx , player.rect.centery)
         # Draw walls
         for wall in walls:
             pygame.draw.rect(screen, BLACK, wall)
@@ -416,13 +385,19 @@ def main():
             if win:
                 screen.fill(BLACK)
                 display_message(screen, "You Win !", GREEN,0,0)
-                display_message2(screen, "CREATED BY SARAN, SHIVEN and SHREY", GREEN,0,100)
-                display_message2(screen, "Points:   " +str(points), GREEN,0,200)
+                display_message2(screen, "CREATED BY SARAN, SHIVEN and SHREY", GREEN,0,50)
+                display_message2(screen, "Points:   " +str(points), GREEN,0, 100)
+                pygame.display.flip()  # Only flip once after all draw call
+                pygame.time.delay(3000)
+                running = False
             else:
                 screen.fill(BLACK)
                 display_message(screen, "You Lose", RED, 0,0)
-                display_message2(screen, "TRY AGAIN ?", RED,0,100)
-                display_message2(screen, "Points:   " + str(points), RED,0,200)
+                display_message2(screen, " WANT TO TRY AGAIN, PRESS ENTER?", RED,0,100)
+                display_message2(screen, "Points:   " + str(points), RED,0,150)
+                pygame.display.flip()  # Only flip once after all draw call
+                end_screen()
+                  # Wait for a moment before closing       
             pygame.display.flip()  # Only flip once after all draw calls
             pygame.time.delay(3000)  # Wait for a moment before closing
             running = False
