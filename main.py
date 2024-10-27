@@ -55,7 +55,7 @@ walls = [
 ]
 
 walls2 = [
-    # Inner walls (example)
+    # Inner walls
     pygame.Rect(60, 10, 10, 100), # First Down
     pygame.Rect(60, 160, 10, 200),# Second Down
     pygame.Rect(60, 410, 10, 140),# Third down
@@ -118,17 +118,19 @@ def display_message(screen, message, color,x,y):
     message_text = large_font.render(message, True, color)
     screen.blit(message_text, ((SCREEN_WIDTH + x) // 2 - message_text.get_width() // 2,
                                 (SCREEN_HEIGHT + y) // 2 - message_text.get_height() // 2))
+
 def display_message2(screen, message, color,x,y):
     message_text = font.render(message, True, color)
     screen.blit(message_text, ((SCREEN_WIDTH + x) // 2 - message_text.get_width() // 2,
                                 (SCREEN_HEIGHT + y) // 2 - message_text.get_height() // 2))
 
 def check_goal_reached(player):
-    # Check if player has reached the goal within the radius
+    # Check if player has reached the goal 
     dist = math.sqrt((player.rect.centerx - GOAL_POSITION[0]) ** 2 +
                     (player.rect.centery - GOAL_POSITION[1]) ** 2)
     return dist <= GOAL_RADIUS  # Return True if within radius
 
+# Flag class to represent the flags
 class Flag:
     def __init__(self, x, y):
         self.image = flag_img
@@ -143,10 +145,10 @@ class Flag:
 
 
 def check_flag_reached(player, x1, y1):
-        # Check if player has reached the goal within the radius
+        # Check if player has reached the flag
         dist = math.sqrt((player.rect.centerx - x1) ** 2 +
                         (player.rect.centery - y1) ** 2)
-        return dist <= GOAL_RADIUS  # Return True if within radius
+        return dist <= GOAL_RADIUS  # Return True if it has
 
 # Character class
 class Character:
@@ -200,6 +202,7 @@ class Character:
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
 def draw_fog(x, y):
     # Calculate the size of the fog rectangles
     fog_width = SCREEN_WIDTH
@@ -255,6 +258,7 @@ def draw_fog(x, y):
     bot = 10
     left = 10
     right = 10
+
 def title_screen():
     while True:
         screen.fill(BLACK)
@@ -270,6 +274,7 @@ def title_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
                     return  # Exit the title screen'''
+
 def end_screen():
     while True:
         for event in pygame.event.get():
@@ -280,6 +285,7 @@ def end_screen():
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
                     main()
                     return  # Exit the title screen'''
+
 def main():
     title_screen()
     #MUSIC
@@ -320,6 +326,8 @@ def main():
 
         # Update player
         player.update(keys)
+
+        # Update flags
         if check_flag_reached(player, FLAG_ONE_POSITION[0], FLAG_ONE_POSITION[1]) and not taken1:
             taken1 = True
             points += 1
@@ -336,9 +344,7 @@ def main():
         elif not taken3:
             flag3.update(taken3)
 
-
-        # draw_fog(player.rect.centerx , player.rect.centery)
-        
+        draw_fog(player.rect.centerx , player.rect.centery)        
         
         # Draw walls
         for wall in walls:
@@ -358,25 +364,6 @@ def main():
         # Display timer
         display_timer(screen, font, remaining_time)
 
-        '''
-        if check_flag_reached(player, FLAG_ONE_POSITION[0], FLAG_ONE_POSITION[1]) and not taken1:
-            taken1 = True
-            points += 1
-        elif not taken1:
-            pygame.draw.circle(screen, GREEN, FLAG_ONE_POSITION, FLAG_ONE_RADIUS)
-
-        if check_flag_reached(player, FLAG_TWO_POSITION[0], FLAG_TWO_POSITION[1]) and not taken2:
-            taken2 = True
-            points += 1
-        elif not taken2:
-            pygame.draw.circle(screen, GREEN, FLAG_TWO_POSITION, FLAG_TWO_RADIUS)
-
-        if check_flag_reached(player, FLAG_THREE_POSITION[0], FLAG_THREE_POSITION[1]) and not taken3:
-            taken3 = True
-            points += 1
-        elif not taken3:
-            pygame.draw.circle(screen, GREEN, FLAG_THREE_POSITION, FLAG_THREE_RADIUS)
-        '''
         # Check for win condition
         if check_goal_reached(player):
             win = True
