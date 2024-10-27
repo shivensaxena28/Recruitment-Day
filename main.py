@@ -30,6 +30,7 @@ pygame.display.set_caption("Pixel-Based Maze")
 
 font = pygame.font.Font(None, 36)
 large_font = pygame.font.Font(None, 72)
+title_font = pygame.font.SysFont('Angels Message Formal', 72, pygame.font.Font.bold)
 start_time = 30000
 font = pygame.font.Font(None, 36)
 large_font = pygame.font.Font(None, 72)
@@ -115,7 +116,7 @@ def display_timer(screen, font, remaining_time):
     screen.blit(timer_text, (SCREEN_WIDTH - 120, 10))
 
 def display_message(screen, message, color,x,y):
-    message_text = large_font.render(message, True, color)
+    message_text = title_font.render(message, True, color)
     screen.blit(message_text, ((SCREEN_WIDTH + x) // 2 - message_text.get_width() // 2,
                                 (SCREEN_HEIGHT + y) // 2 - message_text.get_height() // 2))
 
@@ -378,15 +379,15 @@ def main():
             if win:
                 screen.fill(BLACK)
                 display_message(screen, "You Win !", GREEN,0,0)
-                display_message2(screen, "CREATED BY SARAN, SHIVEN and SHREY", GREEN,0,80)
-                display_message2(screen, "Points:   " +str(points), GREEN,0, 150)
+                display_message2(screen, "We declare you the maze master", GREEN,0,80)
+                display_message2(screen, "Points:   " + str(points) + "/3", GREEN,0, 150)
                 pygame.display.flip()  # Only flip once after all draw call
                 running = False
             else:
                 screen.fill(BLACK)
                 display_message(screen, "You Lose", RED, 0,0)
-                display_message2(screen, " WANT TO TRY AGAIN, PRESS ENTER?", RED,0,100)
-                display_message2(screen, "Points:   " + str(points), RED,0,150)
+                display_message2(screen, "Want to try again, press ENTER?", RED,0,100)
+                display_message2(screen, "Points:   " + str(points) + "/3", RED,0,150)
                 pygame.display.flip()  # Only flip once after all draw call
                 end_screen()
                   # Wait for a moment before closing       
