@@ -1,5 +1,7 @@
 import pygame
 import math
+from pygame.locals import *
+from pygame import mixer
 
 # Initialize pygame
 pygame.init()
@@ -72,7 +74,7 @@ walls2 = [
     pygame.Rect(460, 360, 100, 10),
     pygame.Rect(740, 420, 10, 100),
     pygame.Rect(740, 520, 50, 10),
-    pygame.Rect(520, 330, 40, 30),
+    pygame.Rect(420, 330, 140, 30),
     pygame.Rect(720,260, 10, 100),  #right most down middle
     pygame.Rect(730,260, 60, 10),
     pygame.Rect(350, 100, 10, 60), #Top right block bottom
@@ -196,10 +198,9 @@ def draw_fog(x, y):
 def title_screen():
     while True:
         screen.fill(BLACK)
-        display_message(screen, "FLASH-LIGHT MAZE", WHITE, 0,0)
-        display_message2(screen, "Press Enter to Start", WHITE, 0,200)
+        display_message(screen, "FLASH-LIGHT MAZE", YELLOW, 0,0)
+        display_message2(screen, "PRESS ENTER", RED,0,100)
         pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -207,29 +208,36 @@ def title_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
                     return  # Exit the title screen'''
-def End_screen():
+def end_screen():
     while True:
         screen.fill(BLACK)
-        display_message(screen, "FLASH-LIGHT MAZE", WHITE, 0,0)
-        display_message2(screen, "Press Enter to Start", WHITE, 0,200)
+        display_message(screen, "YOU LOSE", RED, 0,0)
+        display_message2(screen, "WANT TO TRY AGAIN ?", RED,0,100)
+        display_message2(screen, "PRESS ENTER", RED,0,150)
         pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
+                    main()
                     return  # Exit the title screen'''
+
 def main():
     title_screen()
+    #MUSIC
+    mixer.init()
+    mixer.music.load('Music.mp3')
+    mixer.music.set_volume(0.5)
+    mixer.music.play()
     player = Character(30, 30)  # Starting position
     clock = pygame.time.Clock()
     running = True
     game_over = False
     win = False
     start_ticks = pygame.time.get_ticks()
-
+    
     while running:
         elapsed_time = pygame.time.get_ticks() - start_ticks
         remaining_time = start_time - elapsed_time
@@ -243,7 +251,7 @@ def main():
         # Get keys pressed
         keys = pygame.key.get_pressed()
 
-        #draw_fog(player.rect.centerx , player.rect.centery)
+        draw_fog(player.rect.centerx , player.rect.centery)
         # Update player
         player.update(keys)
 
@@ -262,7 +270,7 @@ def main():
 
         # Display timer
         display_timer(screen, font, remaining_time)
-
+        pygame.display.flip()
         # Check for win condition
         if check_goal_reached(player):
             win = True
@@ -278,13 +286,13 @@ def main():
                 screen.fill(BLACK)
                 display_message(screen, "You Win !", GREEN,0,0)
                 display_message2(screen, "CREATED BY SARAN", GREEN,0,100)
+                display_message2(screen, "SHREY SHIVAN", GREEN,0,150)
+                pygame.display.flip() 
+                pygame.time.delay(3000)  # Wait for a moment before closing
+                running = False
             else:
-                screen.fill(BLACK)
-                display_message(screen, "You Lose", RED, 0,0)
-                display_message2(screen, "TRY AGAIN ?", RED,0,100)
+                end_screen()
             pygame.display.flip()  # Only flip once after all draw calls
-            pygame.time.delay(3000)  # Wait for a moment before closing
-            running = False
         else:
             pygame.display.flip()  # Update the display
 
