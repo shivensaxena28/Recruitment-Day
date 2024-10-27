@@ -334,7 +334,10 @@ def main():
         elif not taken3:
             flag3.update(taken3)
 
-        #draw_fog(player.rect.centerx , player.rect.centery)
+
+        draw_fog(player.rect.centerx , player.rect.centery)
+        
+        
         # Draw walls
         for wall in walls:
             pygame.draw.rect(screen, BLACK, wall)
@@ -343,8 +346,8 @@ def main():
             pygame.draw.rect(screen, BLACK, wall)
 
         # Draw the goal before flipping the display
-        screen.blit(goal_image, (750, 550))
-        #pygame.draw.circle(screen, GREEN, GOAL_POSITION, GOAL_RADIUS)
+        #screen.blit(goal_image, (750, 550))
+        pygame.draw.circle(screen, GREEN, GOAL_POSITION, GOAL_RADIUS)
 
         # Draw player
         player.draw(screen)
@@ -385,10 +388,9 @@ def main():
             if win:
                 screen.fill(BLACK)
                 display_message(screen, "You Win !", GREEN,0,0)
-                display_message2(screen, "CREATED BY SARAN, SHIVEN and SHREY", GREEN,0,50)
-                display_message2(screen, "Points:   " +str(points), GREEN,0, 100)
+                display_message2(screen, "CREATED BY SARAN, SHIVEN and SHREY", GREEN,0,80)
+                display_message2(screen, "Points:   " +str(points), GREEN,0, 150)
                 pygame.display.flip()  # Only flip once after all draw call
-                pygame.time.delay(3000)
                 running = False
             else:
                 screen.fill(BLACK)
