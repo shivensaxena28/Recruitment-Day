@@ -1,5 +1,7 @@
 import pygame
 import math
+from pygame.locals import *
+from pygame import mixer
 
 # Initialize pygame
 pygame.init()
@@ -24,7 +26,11 @@ GOAL_RADIUS = 15
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pixel-Based Maze")
+pygame.display.set_caption("Pixel-Based Maze")
 
+font = pygame.font.Font(None, 36)
+large_font = pygame.font.Font(None, 72)
+start_time = 30000
 font = pygame.font.Font(None, 36)
 large_font = pygame.font.Font(None, 72)
 start_time = 30000
@@ -191,6 +197,36 @@ class Character:
                     new_rect.top = wall.bottom
                     
         self.rect = new_rect
+            
+
+    def check_collision(self, dx, dy):
+        # Check for collision with walls
+        new_rect = self.rect.move(dx, dy)
+        for wall in walls:
+            if new_rect.colliderect(wall):
+                # If colliding, reset position to avoid moving into the wall
+                if dx > 0:  # Moving right
+                    new_rect.right = wall.left
+                if dx < 0:  # Moving left
+                    new_rect.left = wall.right
+                if dy > 0:  # Moving down
+                    new_rect.bottom = wall.top
+                if dy < 0:  # Moving up
+                    new_rect.top = wall.bottom
+                    
+        for wall in walls2:
+            if new_rect.colliderect(wall):
+                # If colliding, reset position to avoid moving into the wall
+                if dx > 0:  # Moving right
+                    new_rect.right = wall.left
+                if dx < 0:  # Moving left
+                    new_rect.left = wall.right
+                if dy > 0:  # Moving down
+                    new_rect.bottom = wall.top
+                if dy < 0:  # Moving up
+                    new_rect.top = wall.bottom
+                    
+        self.rect = new_rect
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -198,6 +234,27 @@ def draw_fog(x, y):
     # Calculate the size of the fog rectangles
     fog_width = SCREEN_WIDTH
     fog_height = SCREEN_HEIGHT
+    keys = pygame.key.get_pressed()
+    up = 10
+    bot = 10
+    left = 10
+    right = 10
+    if keys[pygame.K_LEFT]:
+        left = 50
+        bot = 20
+        up = 20
+    if keys[pygame.K_RIGHT]:
+        right = 50
+        bot = 20
+        up = 20
+    if keys[pygame.K_UP]:
+        up = 50
+        left = 20
+        right = 20
+    if keys[pygame.K_DOWN]:
+        bot = 50
+        left = 20
+        right = 20
     keys = pygame.key.get_pressed()
     up = 10
     bot = 10
@@ -277,16 +334,20 @@ def main():
         elapsed_time = pygame.time.get_ticks() - start_ticks
         remaining_time = start_time - elapsed_time
         screen.fill(YELLOW)
+        elapsed_time = pygame.time.get_ticks() - start_ticks
+        remaining_time = start_time - elapsed_time
+        screen.fill(YELLOW)
 
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
         
+        
         # Get keys pressed
         keys = pygame.key.get_pressed()
 
-        #draw_fog(player.rect.centerx , player.rect.centery)
+        draw_fog(player.rect.centerx , player.rect.centery)
         # Update player
         player.update(keys)
         if check_flag_reached(player, FLAG_ONE_POSITION[0], FLAG_ONE_POSITION[1]) and not taken1:
