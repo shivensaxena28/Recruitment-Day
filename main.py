@@ -263,7 +263,7 @@ def draw_fog(x, y):
 def title_screen():
     while True:
         screen.fill(BLACK)
-        display_message(screen, "FLASH-LIGHT MAZE", YELLOW, 0,0)
+        display_message(screen, "THE MIDNIGHT MAZE", YELLOW, 0,0)
         display_message2(screen, "Get as many flags and reach the end before time runs out", WHITE, 0,100)
         display_message2(screen, "Press Enter to Start", RED, -10,150)
         pygame.display.flip()
@@ -379,7 +379,7 @@ def main():
             if win:
                 screen.fill(BLACK)
                 display_message(screen, "You Win !", GREEN,0,0)
-                display_message2(screen, "We declare you the maze master", GREEN,0,80)
+                display_message2(screen, "We declare you the MAZE MASTER", GREEN,0,80)
                 display_message2(screen, "Points:   " + str(points) + "/3", GREEN,0, 150)
                 pygame.display.flip()  # Only flip once after all draw call
                 running = False
