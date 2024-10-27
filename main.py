@@ -8,7 +8,7 @@ pygame.init()
 
 # Constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-WHITE, BLACK, RED, GREEN, GRAY, YELLOW = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (211, 211, 211), (255,255,0)
+WHITE, BLACK, RED, GREEN, GRAY, YELLOW = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (169, 169, 169), (255,255,0)
 PLAYER_SPEED = 1.75
 
 FLAG_ONE_POSITION = (95, 520)
@@ -25,8 +25,8 @@ GOAL_RADIUS = 15
 
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Pixel-Based Maze")
-pygame.display.set_caption("Pixel-Based Maze")
+pygame.display.set_caption("The Midnight Maze")
+pygame.display.set_caption("The Midnight Maze")
 
 font = pygame.font.Font(None, 36)
 large_font = pygame.font.Font(None, 72)
@@ -344,16 +344,18 @@ def main():
             points += 1
         elif not taken3:
             flag3.update(taken3)
-
-        draw_fog(player.rect.centerx , player.rect.centery)        
+   
         
-        # Draw walls
-        for wall in walls:
-            pygame.draw.rect(screen, BLACK, wall)
+            
             
         for wall in walls2:
             #screen.blit(tile_image, wall)
-            pygame.draw.rect(screen, BLACK, wall)
+            pygame.draw.rect(screen, GRAY, wall)
+               
+        draw_fog(player.rect.centerx , player.rect.centery)  
+         
+        for wall in walls:
+            pygame.draw.rect(screen, WHITE, wall)
 
         # Draw the goal before flipping the display
         screen.blit(goal_image, (750, 550))
