@@ -299,6 +299,8 @@ def main():
     taken1 = False
     taken2 = False
     taken3 = False
+    #tile_image = pygame.image.load("assets/tile1.png").convert_alpha()
+    #tile_image = pygame.transform.scale(tile_image, (10, 60))
     goal_image = goal_img
     start_ticks = pygame.time.get_ticks()
 
@@ -335,7 +337,7 @@ def main():
             flag3.update(taken3)
 
 
-        draw_fog(player.rect.centerx , player.rect.centery)
+        # draw_fog(player.rect.centerx , player.rect.centery)
         
         
         # Draw walls
@@ -343,11 +345,12 @@ def main():
             pygame.draw.rect(screen, BLACK, wall)
             
         for wall in walls2:
+            #screen.blit(tile_image, wall)
             pygame.draw.rect(screen, BLACK, wall)
 
         # Draw the goal before flipping the display
-        #screen.blit(goal_image, (750, 550))
-        pygame.draw.circle(screen, GREEN, GOAL_POSITION, GOAL_RADIUS)
+        screen.blit(goal_image, (750, 550))
+        #pygame.draw.circle(screen, GREEN, GOAL_POSITION, GOAL_RADIUS)
 
         # Draw player
         player.draw(screen)
