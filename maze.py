@@ -5,7 +5,9 @@ import random
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
+BLACK = (0, 0 , 0)
+BLOCK = pygame.image.load("tile 1.png").convert_alpha()
+BLOCK = pygame.transform.scale(BLOCK,(40,40))   
 
 # Maze settings
 CELL_SIZE = 80  # Increased cell size for larger spacing
@@ -54,5 +56,5 @@ def generate_maze(width, height):
 def draw_maze(maze):
     for y, row in enumerate(maze):
         for x, cell in enumerate(row):
-            color = WHITE if cell == ' ' else BLACK
+            color = WHITE if cell == ' ' else BLOCK
             pygame.draw.rect(screen, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
